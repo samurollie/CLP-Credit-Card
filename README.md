@@ -2,6 +2,6 @@
 
 ### Equipe
 
-[Gustavo Domingos de Oliveira](gdo@ic.ufal.br),
-[Otávio Barbosa Siqueira](obs@ic.ufal.br) e 
-[Samuel Lucas Vieira Lins Barbosa](slvlb@ic.ufal.br)
+[Gustavo Domingos de Oliveira](mailto:gdo@ic.ufal.br),
+[Otávio Barbosa Siqueira](mailto:obs@ic.ufal.br) e 
+[Samuel Lucas Vieira Lins Barbosa](mailto:slvlb@ic.ufal.br)
