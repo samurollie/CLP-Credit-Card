@@ -1,13 +1,24 @@
-package com.clp.models
+package com.clp.repository
+import com.clp.models.CreditCard
+import com.clp.models.CreditCards
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.springframework.stereotype.Repository
+import javax.sql.DataSource
 
-class CreditCardRepository {
+@Repository
+class CreditCardRepository(private val dataSource: DataSource) {
+
+    init {
+        // Initialize Exposed with Spring's DataSource
+        Database.connect(dataSource)
+    }
 
     fun addCreditCard(card: CreditCard): CreditCard {
         transaction {
-            CreditCards.insert {
+            // Use insertAndGetId to insert and get the generated ID
+            val generatedId = CreditCards.insertAndGetId {
                 it[numeroCartao] = card.numeroCartao
                 it[cvv] = card.cvv
                 it[dataValidade] = card.dataValidade
@@ -17,6 +28,8 @@ class CreditCardRepository {
                 it[idUsuario] = card.idUsuario
                 it[idFatura] = card.idFatura
             }
+            // Assign the generated ID to the card's id property
+            card.id = generatedId.value // Assuming 'id' is of type Long in CreditCard
         }
         return card
     }
@@ -52,7 +65,28 @@ class CreditCardRepository {
 
     fun deleteCreditCard(id: Int): Boolean {
         return transaction {
-            CreditCards.deleteWhere { CreditCards.id eq id } > 0
+            val deletedCardCount = CreditCards.deleteWhere { CreditCards.id eq id }
+            if (deletedCardCount > 0) {
+                println("Credit card with ID $id deleted.")
+            } else {
+                println("Credit card with ID $id not found.")
+            }
+            deletedCardCount > 0 // Return true if the card was deleted
+        }
+    }
+
+    fun deleteAllCreditCards() {
+        transaction {
+            // Deletes all entries from the CreditCards table
+            val deletedCount = CreditCards.deleteAll()
+            println("$deletedCount credit card(s) deleted.")
+        }
+    }
+
+    fun existsCreditCardNumber(creditCardNumber: String): Boolean {
+        return transaction {
+            CreditCards.selectAll().where { CreditCards.numeroCartao eq creditCardNumber }
+                .singleOrNull() != null
         }
     }
 
