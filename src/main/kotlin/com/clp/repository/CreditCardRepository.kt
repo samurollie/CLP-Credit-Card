@@ -1,10 +1,12 @@
 package com.clp.repository
 import com.clp.models.CreditCard
 import com.clp.models.CreditCards
+import com.clp.models.StatusEnum
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Repository
+import java.time.LocalDate
 import javax.sql.DataSource
 
 @Repository
@@ -48,28 +50,38 @@ class CreditCardRepository(private val dataSource: DataSource) {
         }
     }
 
-    fun updateCreditCard(id: Int, updatedCard: CreditCard): Boolean {
-        return transaction {
+    fun updateCreditLimit(id: Int, newLimit: Double) {
+        transaction {
             CreditCards.update({ CreditCards.id eq id }) {
-                it[numeroCartao] = updatedCard.numeroCartao
-                it[cvv] = updatedCard.cvv
-                it[dataValidade] = updatedCard.dataValidade
-                it[limiteDisponivel] = updatedCard.limiteDisponivel
-                it[status] = updatedCard.status
-                it[limiteTotal] = updatedCard.limiteTotal
-                it[idUsuario] = updatedCard.idUsuario
-                it[idFatura] = updatedCard.idFatura
-            } > 0
+                it[limiteDisponivel] = newLimit
+            }
         }
     }
 
-    fun deleteCreditCard(id: Int): Boolean {
+    fun updateCreditStatus(id: Int, status: StatusEnum) {
+        transaction {
+            CreditCards.update({ CreditCards.id eq id }) {
+                it[CreditCards.status] = status
+            }
+        }
+    }
+
+    fun updateCreditExpirationDate(id: Int, dataValidade: LocalDate) {
+        transaction {
+            CreditCards.update({ CreditCards.id eq id }) {
+                it[CreditCards.dataValidade] = dataValidade
+            }
+        }
+    }
+
+
+    fun deleteCreditCardById(id: Int): Boolean {
         return transaction {
-            val deletedCardCount = CreditCards.deleteWhere { CreditCards.id eq id }
+            val deletedCardCount = CreditCards.deleteWhere {CreditCards.id eq id}
             if (deletedCardCount > 0) {
-                println("Credit card with ID $id deleted.")
+                println("Credit card with number $id deleted.")
             } else {
-                println("Credit card with ID $id not found.")
+                println("Credit card with number $id not found.")
             }
             deletedCardCount > 0 // Return true if the card was deleted
         }

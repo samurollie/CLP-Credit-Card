@@ -37,19 +37,74 @@ class CreditCardServices(private val creditCardRepository: CreditCardRepository)
     }
 
     fun createCreditCard(newUserId: Int): CreditCard {
+        // Validate user ID
+        if (newUserId <= 0) {
+            throw IllegalArgumentException("Invalid user ID.")
+        }
+
+        // Create a new credit card instance
         val newCard = CreditCard(
-            numeroCartao = createCreditCardNumber(),
-            cvv = createCVV(),
-            dataValidade = createExpirationDate(),
-            limiteDisponivel = defineAvailableLimit(),
+            numeroCartao = createCreditCardNumber() ?: throw IllegalStateException("Failed to generate credit card number."),
+            cvv = createCVV() ?: throw IllegalStateException("Failed to generate CVV."),
+            dataValidade = createExpirationDate() ?: throw IllegalStateException("Failed to generate expiration date."),
+            limiteDisponivel = defineAvailableLimit().takeIf { it >= 0 } ?: throw IllegalArgumentException("Available limit must be non-negative."),
             status = StatusEnum.Ativo,
-            limiteTotal = defineTotalLimit(),
+            limiteTotal = defineTotalLimit().takeIf { it >= 0 } ?: throw IllegalArgumentException("Total limit must be non-negative."),
             idUsuario = newUserId,
             idFatura = null
         )
 
-        creditCardRepository.addCreditCard(newCard)
-        println("Added Credit Card: $newCard")
-        return newCard
+        // Attempt to add the credit card to the repository
+        return try {
+            creditCardRepository.addCreditCard(newCard)
+            println("Added Credit Card: $newCard")
+            newCard // Return the created card
+        } catch (e: Exception) {
+            throw RuntimeException("Failed to create credit card in the database: ${e.message}", e)
+        }
+    }
+
+
+    fun getCreditCardById(id: Int): CreditCard? {
+        if (id <= 0) throw IllegalArgumentException("ID must be positive.")
+        return creditCardRepository.getCreditCardById(id)
+    }
+
+    fun deleteCreditCardById(id: Int): Boolean {
+        if (id <= 0) throw IllegalArgumentException("ID must be positive.")
+        return creditCardRepository.deleteCreditCardById(id)
+    }
+
+    fun updateCreditCardLimit(id: Int, newLimit: Double) {
+        if (id <= 0) throw IllegalArgumentException("ID must be positive.")
+        if (newLimit < 0) throw IllegalArgumentException("New limit must be non-negative.")
+        return creditCardRepository.updateCreditLimit(id, newLimit)
+    }
+
+    fun updateCreditCardStatus(id: Int, status: StatusEnum) {
+        if (id <= 0) throw IllegalArgumentException("ID must be positive.")
+
+        // Fetch the current status of the credit card
+        val currentCreditCard = creditCardRepository.getCreditCardById(id)
+            ?: throw NoSuchElementException("Credit card not found.")
+
+        // Check if the current status is the same as the new status
+        if (currentCreditCard.status == status) {
+            throw IllegalArgumentException("Credit card is already in the status: $status.")
+        }
+
+        // Proceed with the update if the status is different
+        creditCardRepository.updateCreditStatus(id, status)
+    }
+
+
+    fun updateCreditCardExpirationDate(id: Int, expirationDate: LocalDate) {
+        if (id <= 0) throw IllegalArgumentException("ID must be positive.")
+        if (expirationDate.isBefore(LocalDate.now())) throw IllegalArgumentException("Expiration date cannot be in the past.")
+        return creditCardRepository.updateCreditExpirationDate(id, expirationDate)
+    }
+
+    fun getAllCreditCards() : List<CreditCard> {
+        return creditCardRepository.getAllCreditCards()
     }
 }
