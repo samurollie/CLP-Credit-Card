@@ -37,6 +37,11 @@ dependencies {
 	implementation("org.jetbrains.exposed:exposed-dao:0.55.0")
 	implementation("org.jetbrains.exposed:exposed-jdbc:0.55.0")
 	implementation("org.jetbrains.exposed:exposed-java-time:0.55.0")
+
+	implementation("org.jetbrains.exposed:exposed-crypt:0.55.0")
+	implementation("org.jetbrains.exposed:exposed-json:0.55.0")
+	implementation("org.jetbrains.exposed:exposed-money:0.55.0")
+	implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.55.0")
 }
 
 kotlin {
