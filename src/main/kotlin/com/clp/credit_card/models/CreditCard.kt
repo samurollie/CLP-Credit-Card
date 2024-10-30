@@ -1,4 +1,4 @@
-package com.clp.models
+package com.clp.credit_card.models
 import java.time.LocalDate
 
 enum class StatusEnum {

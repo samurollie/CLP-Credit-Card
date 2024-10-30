@@ -1,11 +1,11 @@
 // src/main/kotlin/com/example/project/Main.kt
 
-package com.clp.models
+package com.clp.credit_card.models
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDate
 
-fun main() {
+fun mainTest() {
     // Connect to the database
     Database.connect("jdbc:postgresql://localhost:5432/GerenciadorDeCartao", driver = "org.postgresql.Driver",
         user = "postgres", password = "adminadmin")
