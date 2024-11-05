@@ -1,4 +1,4 @@
-package com.clp.models
+package com.clp.credit_card.models
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.javatime.date
@@ -24,7 +24,7 @@ object CreditCards : IntIdTable("cartao_de_credito") {
         { PGEnum("status_enum", it) } // toDb transformation
     )
     val limiteTotal: Column<Double> = double("limite_total")
-    val idUsuario: Column<Int> = integer("id_usuario").uniqueIndex()
+    val idUsuario: Column<Int> = integer("id_usuario")
     val idFatura: Column<Int?> = integer("id_fatura").nullable() // Nullable
 }
 

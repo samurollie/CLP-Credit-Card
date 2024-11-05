@@ -1,13 +1,14 @@
-package com.clp.services
+package com.clp.credit_card.services
 
-import com.clp.models.CreditCard
-import com.clp.models.StatusEnum
-import com.clp.repository.CreditCardRepository
+import com.clp.credit_card.models.CreditCard
+import com.clp.credit_card.models.StatusEnum
+import com.clp.credit_card.repository.CreditCardRepository
+import com.clp.credit_card.repository.UserRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
-class CreditCardServices(private val creditCardRepository: CreditCardRepository) { // Dependency injection
+class CreditCardServices(private val creditCardRepository: CreditCardRepository, private val userRepository: UserRepository) { // Dependency injection
 
     private fun defineTotalLimit(): Double {
         return 2000.0
@@ -106,5 +107,9 @@ class CreditCardServices(private val creditCardRepository: CreditCardRepository)
 
     fun getAllCreditCards() : List<CreditCard> {
         return creditCardRepository.getAllCreditCards()
+    }
+
+    fun createUser(): Int {
+        return userRepository.addUser()
     }
 }

@@ -1,17 +1,17 @@
-package com.clp.controllers
-import com.clp.models.CreditCard
-import com.clp.models.StatusEnum
+package com.clp.credit_card.controllers
+import com.clp.credit_card.models.CreditCard
+import com.clp.credit_card.models.StatusEnum
 import org.springframework.web.bind.annotation.*
 import org.springframework.http.ResponseEntity
 import org.springframework.http.HttpStatus
-import com.clp.services.CreditCardServices
+import com.clp.credit_card.services.CreditCardServices
 import java.time.LocalDate
 
 @RestController
 @RequestMapping("/api/credit-card")
 class CreditCardController(private val creditCardServices: CreditCardServices) {
 
-    @PostMapping("/create")
+    @PostMapping("")
     fun createCreditCard(@RequestParam newUserId: Int): ResponseEntity<CreditCard> {
         return try {
             val newCard = creditCardServices.createCreditCard(newUserId)
@@ -25,8 +25,22 @@ class CreditCardController(private val creditCardServices: CreditCardServices) {
         }
     }
 
+    @PostMapping("/create_user")
+    fun createUser(): ResponseEntity<Int> {
+        return try {
+            val newUser = creditCardServices.createUser()
+            ResponseEntity.status(HttpStatus.CREATED).body(newUser) // Return the created credit card
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.badRequest().body(null) // 400 Bad Request
+        } catch (e: NoSuchElementException) {
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body(null) // 404 Not Found
+        } catch (e: RuntimeException) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null) // 500 Internal Server Error
+        }
+    }
 
-    @GetMapping("/get/{id}")
+
+    @GetMapping("/{id}")
     fun getCreditCard(@PathVariable id: Int): ResponseEntity<CreditCard> {
         return try {
             val creditCard = creditCardServices.getCreditCardById(id)
@@ -44,7 +58,7 @@ class CreditCardController(private val creditCardServices: CreditCardServices) {
     }
 
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     fun deleteCreditCard(@PathVariable id: Int): ResponseEntity<CreditCard> {
         return try {
             // Attempt to retrieve the credit card info before deletion
@@ -68,13 +82,13 @@ class CreditCardController(private val creditCardServices: CreditCardServices) {
         }
     }
 
-    @PatchMapping("/update/{id}/limit")
+    @PatchMapping("/{id}/limit")
     fun updateCreditLimit(
         @PathVariable id: Int,
-        @RequestParam limiteDisponivel: Double
+        @RequestParam limiteTotal: Double // Era pra ser o total :(
     ): ResponseEntity<String> {
         return try {
-            creditCardServices.updateCreditCardLimit(id, limiteDisponivel)
+            creditCardServices.updateCreditCardLimit(id, limiteTotal)
             ResponseEntity.ok("Credit limit updated successfully!")
         } catch (e: IllegalArgumentException) {
             // Handle cases like invalid ID or negative limit
@@ -89,7 +103,7 @@ class CreditCardController(private val creditCardServices: CreditCardServices) {
     }
 
 
-    @PatchMapping("/update/{id}/status")
+    @PatchMapping("/{id}/status")
     fun updateCardStatus(
         @PathVariable id: Int,
         @RequestParam status: StatusEnum
@@ -107,7 +121,7 @@ class CreditCardController(private val creditCardServices: CreditCardServices) {
     }
 
 
-    @PatchMapping("/update/{id}/expiration")
+    @PatchMapping("/{id}/expiration")
     fun updateExpirationDate(
         @PathVariable id: Int,
         @RequestParam dataValidade: LocalDate

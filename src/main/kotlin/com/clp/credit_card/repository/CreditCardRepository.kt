@@ -1,7 +1,7 @@
-package com.clp.repository
-import com.clp.models.CreditCard
-import com.clp.models.CreditCards
-import com.clp.models.StatusEnum
+package com.clp.credit_card.repository
+import com.clp.credit_card.models.CreditCard
+import com.clp.credit_card.models.CreditCards
+import com.clp.credit_card.models.StatusEnum
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -53,7 +53,7 @@ class CreditCardRepository(private val dataSource: DataSource) {
     fun updateCreditLimit(id: Int, newLimit: Double) {
         transaction {
             CreditCards.update({ CreditCards.id eq id }) {
-                it[limiteDisponivel] = newLimit
+                it[limiteTotal] = newLimit
             }
         }
     }
@@ -77,7 +77,7 @@ class CreditCardRepository(private val dataSource: DataSource) {
 
     fun deleteCreditCardById(id: Int): Boolean {
         return transaction {
-            val deletedCardCount = CreditCards.deleteWhere {CreditCards.id eq id}
+            val deletedCardCount = CreditCards.deleteWhere { CreditCards.id eq id}
             if (deletedCardCount > 0) {
                 println("Credit card with number $id deleted.")
             } else {
