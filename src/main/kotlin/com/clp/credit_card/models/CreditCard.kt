@@ -8,7 +8,7 @@ enum class StatusEnum {
 }
 
 data class CreditCard(
-    val id: Int,
+    var id: Int = 0,
     val numeroCartao: String,
     val cvv: String,
     val dataValidade: LocalDate,

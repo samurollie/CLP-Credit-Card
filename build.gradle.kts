@@ -24,15 +24,15 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	annotationProcessor("org.projectlombok:lombok")
-	runtimeOnly("org.postgresql:postgresql")
+	implementation("org.postgresql:postgresql")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
-	// Ensure version consistency for Exposed
 	implementation("org.jetbrains.exposed:exposed-core:0.55.0")
 	implementation("org.jetbrains.exposed:exposed-dao:0.55.0")
 	implementation("org.jetbrains.exposed:exposed-jdbc:0.55.0")
