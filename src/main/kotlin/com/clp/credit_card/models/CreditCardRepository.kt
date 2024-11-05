@@ -1,4 +1,4 @@
-package com.clp.models
+package com.clp.credit_card.models
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction

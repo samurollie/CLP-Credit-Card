@@ -1,4 +1,4 @@
-package com.clp.models
+package com.clp.credit_card.models
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.javatime.date

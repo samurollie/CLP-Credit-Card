@@ -24,6 +24,9 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	compileOnly("org.projectlombok:lombok")
+	developmentOnly("org.springframework.boot:spring-boot-devtools")
+	annotationProcessor("org.projectlombok:lombok")
 	runtimeOnly("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
@@ -34,6 +37,11 @@ dependencies {
 	implementation("org.jetbrains.exposed:exposed-dao:0.55.0")
 	implementation("org.jetbrains.exposed:exposed-jdbc:0.55.0")
 	implementation("org.jetbrains.exposed:exposed-java-time:0.55.0")
+
+	implementation("org.jetbrains.exposed:exposed-crypt:0.55.0")
+	implementation("org.jetbrains.exposed:exposed-json:0.55.0")
+	implementation("org.jetbrains.exposed:exposed-money:0.55.0")
+	implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.55.0")
 }
 
 kotlin {
