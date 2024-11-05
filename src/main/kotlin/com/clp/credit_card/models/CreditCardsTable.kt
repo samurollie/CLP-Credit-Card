@@ -2,7 +2,6 @@ package com.clp.credit_card.models
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.javatime.date
-
 import org.postgresql.util.PGobject
 
 class PGEnum<T : Enum<T>>(enumTypeName: String, enumValue: T?) : PGobject() {
@@ -11,7 +10,6 @@ class PGEnum<T : Enum<T>>(enumTypeName: String, enumValue: T?) : PGobject() {
         type = enumTypeName
     }
 }
-
 object CreditCards : IntIdTable("cartao_de_credito") {
     val numeroCartao: Column<String> = varchar("numero_cartao", 255).uniqueIndex()
     val cvv: Column<String> = varchar("cvv", 3)  // Adjust length if needed
