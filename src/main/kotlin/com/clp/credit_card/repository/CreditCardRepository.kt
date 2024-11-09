@@ -1,6 +1,6 @@
 package com.clp.credit_card.repository
 import com.clp.credit_card.models.CreditCard
-import com.clp.credit_card.models.CreditCards
+import com.clp.credit_card.tables.CreditCards
 import com.clp.credit_card.models.StatusEnum
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq

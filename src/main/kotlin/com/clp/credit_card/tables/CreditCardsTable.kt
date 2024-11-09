@@ -1,4 +1,5 @@
-package com.clp.credit_card.models
+package com.clp.credit_card.tables
+import com.clp.credit_card.models.StatusEnum
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.javatime.date

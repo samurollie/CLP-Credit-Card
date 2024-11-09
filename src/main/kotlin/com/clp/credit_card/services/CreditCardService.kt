@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
-class CreditCardServices(private val creditCardRepository: CreditCardRepository, private val userRepository: UserRepository) { // Dependency injection
+class CreditCardService(private val creditCardRepository: CreditCardRepository, private val userRepository: UserRepository) { // Dependency injection
 
     private fun defineTotalLimit(): Double {
         return 2000.0

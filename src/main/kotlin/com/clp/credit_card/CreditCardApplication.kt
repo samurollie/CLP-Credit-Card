@@ -15,5 +15,5 @@ import org.springframework.transaction.annotation.EnableTransactionManagement
 class CreditCardApplication
 
 fun main(args: Array<String>) {
-	runApplication<CreditCardApiApplication>(*args)
+	runApplication<CreditCardApplication>(*args)
 }
