@@ -1,6 +1,6 @@
 package com.clp.credit_card.repository
 import com.clp.credit_card.models.CreditCard
-import com.clp.credit_card.tables.CreditCards
+import com.clp.credit_card.tables.CreditCardTable
 import com.clp.credit_card.models.StatusEnum
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -20,7 +20,7 @@ class CreditCardRepository(private val dataSource: DataSource) {
     fun addCreditCard(card: CreditCard): CreditCard {
         transaction {
             // Use insertAndGetId to insert and get the generated ID
-            val generatedId = CreditCards.insertAndGetId {
+            val generatedId = CreditCardTable.insertAndGetId {
                 it[numeroCartao] = card.numeroCartao
                 it[cvv] = card.cvv
                 it[dataValidade] = card.dataValidade
@@ -28,7 +28,7 @@ class CreditCardRepository(private val dataSource: DataSource) {
                 it[status] = card.status
                 it[limiteTotal] = card.limiteTotal
                 it[idUsuario] = card.idUsuario
-                it[idFatura] = card.idFatura
+                it[closingDay] = card.closingDay
             }
             // Assign the generated ID to the card's id property
             card.id = generatedId.value // Assuming 'id' is of type Long in CreditCard
@@ -38,13 +38,13 @@ class CreditCardRepository(private val dataSource: DataSource) {
 
     fun getAllCreditCards(): List<CreditCard> {
         return transaction {
-            CreditCards.selectAll().map { toCreditCard(it) }
+            CreditCardTable.selectAll().map { toCreditCard(it) }
         }
     }
 
     fun getCreditCardById(id: Int): CreditCard? {
         return transaction {
-            CreditCards.selectAll().where { CreditCards.id eq id }
+            CreditCardTable.selectAll().where { CreditCardTable.id eq id }
                 .map { toCreditCard(it) }
                 .singleOrNull()
         }
@@ -52,7 +52,7 @@ class CreditCardRepository(private val dataSource: DataSource) {
 
     fun updateCreditLimit(id: Int, newLimit: Double) {
         transaction {
-            CreditCards.update({ CreditCards.id eq id }) {
+            CreditCardTable.update({ CreditCardTable.id eq id }) {
                 it[limiteTotal] = newLimit
             }
         }
@@ -60,16 +60,16 @@ class CreditCardRepository(private val dataSource: DataSource) {
 
     fun updateCreditStatus(id: Int, status: StatusEnum) {
         transaction {
-            CreditCards.update({ CreditCards.id eq id }) {
-                it[CreditCards.status] = status
+            CreditCardTable.update({ CreditCardTable.id eq id }) {
+                it[CreditCardTable.status] = status
             }
         }
     }
 
     fun updateCreditExpirationDate(id: Int, dataValidade: LocalDate) {
         transaction {
-            CreditCards.update({ CreditCards.id eq id }) {
-                it[CreditCards.dataValidade] = dataValidade
+            CreditCardTable.update({ CreditCardTable.id eq id }) {
+                it[CreditCardTable.dataValidade] = dataValidade
             }
         }
     }
@@ -77,7 +77,7 @@ class CreditCardRepository(private val dataSource: DataSource) {
 
     fun deleteCreditCardById(id: Int): Boolean {
         return transaction {
-            val deletedCardCount = CreditCards.deleteWhere { CreditCards.id eq id}
+            val deletedCardCount = CreditCardTable.deleteWhere { CreditCardTable.id eq id}
             if (deletedCardCount > 0) {
                 println("Credit card with number $id deleted.")
             } else {
@@ -90,14 +90,14 @@ class CreditCardRepository(private val dataSource: DataSource) {
     fun deleteAllCreditCards() {
         transaction {
             // Deletes all entries from the CreditCards table
-            val deletedCount = CreditCards.deleteAll()
+            val deletedCount = CreditCardTable.deleteAll()
             println("$deletedCount credit card(s) deleted.")
         }
     }
 
     fun existsCreditCardNumber(creditCardNumber: String): Boolean {
         return transaction {
-            CreditCards.selectAll().where { CreditCards.numeroCartao eq creditCardNumber }
+            CreditCardTable.selectAll().where { CreditCardTable.numeroCartao eq creditCardNumber }
                 .singleOrNull() != null
         }
     }
@@ -105,15 +105,15 @@ class CreditCardRepository(private val dataSource: DataSource) {
     // Helper function to map ResultRow to CreditCard
     private fun toCreditCard(row: ResultRow): CreditCard {
         return CreditCard(
-            id = row[CreditCards.id].value,
-            numeroCartao = row[CreditCards.numeroCartao],
-            cvv = row[CreditCards.cvv],
-            dataValidade = row[CreditCards.dataValidade],
-            limiteDisponivel = row[CreditCards.limiteDisponivel],
-            status = row[CreditCards.status],
-            limiteTotal = row[CreditCards.limiteTotal],
-            idUsuario = row[CreditCards.idUsuario],
-            idFatura = row[CreditCards.idFatura]
+            id = row[CreditCardTable.id].value,
+            numeroCartao = row[CreditCardTable.numeroCartao],
+            cvv = row[CreditCardTable.cvv],
+            dataValidade = row[CreditCardTable.dataValidade],
+            limiteDisponivel = row[CreditCardTable.limiteDisponivel],
+            status = row[CreditCardTable.status],
+            limiteTotal = row[CreditCardTable.limiteTotal],
+            idUsuario = row[CreditCardTable.idUsuario],
+            closingDay = row[CreditCardTable.closingDay]
         )
     }
 }

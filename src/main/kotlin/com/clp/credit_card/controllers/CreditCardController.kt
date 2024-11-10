@@ -1,10 +1,10 @@
 package com.clp.credit_card.controllers
 import com.clp.credit_card.models.CreditCard
 import com.clp.credit_card.models.StatusEnum
-import org.springframework.web.bind.annotation.*
-import org.springframework.http.ResponseEntity
-import org.springframework.http.HttpStatus
 import com.clp.credit_card.services.CreditCardService
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
 
 @RestController
@@ -12,9 +12,9 @@ import java.time.LocalDate
 class CreditCardController(private val creditCardService: CreditCardService) {
 
     @PostMapping()
-    fun createCreditCard(@RequestParam newUserId: Int): ResponseEntity<CreditCard> {
+    fun createCreditCard(@RequestParam newUserId: Int, @RequestParam closingDay: Int): ResponseEntity<CreditCard> {
         return try {
-            val newCard = creditCardService.createCreditCard(newUserId)
+            val newCard = creditCardService.createCreditCard(newUserId, closingDay)
             ResponseEntity.status(HttpStatus.CREATED).body(newCard) // Return the created credit card
         } catch (e: IllegalArgumentException) {
             ResponseEntity.badRequest().body(null) // 400 Bad Request

@@ -1,4 +1,5 @@
 package com.clp.credit_card.models
+
 import java.time.LocalDate
 
 enum class StatusEnum {
@@ -16,6 +17,6 @@ data class CreditCard(
     val status: StatusEnum,
     val limiteTotal: Double,
     val idUsuario: Int,
-    val idFatura: Int?
+    val closingDay: Int,
 )
 

@@ -11,7 +11,7 @@ class PGEnum<T : Enum<T>>(enumTypeName: String, enumValue: T?) : PGobject() {
         type = enumTypeName
     }
 }
-object CreditCards : IntIdTable("cartao_de_credito") {
+object CreditCardTable : IntIdTable("cartao_de_credito") {
     val numeroCartao: Column<String> = varchar("numero_cartao", 255).uniqueIndex()
     val cvv: Column<String> = varchar("cvv", 3)  // Adjust length if needed
     val dataValidade: Column<java.time.LocalDate> = date("data_validade")
@@ -23,7 +23,7 @@ object CreditCards : IntIdTable("cartao_de_credito") {
         { PGEnum("status_enum", it) } // toDb transformation
     )
     val limiteTotal: Column<Double> = double("limite_total")
+    val closingDay: Column<Int> = integer("closing_day")
     val idUsuario: Column<Int> = integer("id_usuario")
-    val idFatura: Column<Int?> = integer("id_fatura").nullable() // Nullable
 }
 

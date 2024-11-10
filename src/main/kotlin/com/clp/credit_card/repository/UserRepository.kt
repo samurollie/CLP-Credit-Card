@@ -1,5 +1,5 @@
 package com.clp.credit_card.repository
-import com.clp.credit_card.tables.CreditCards
+import com.clp.credit_card.tables.CreditCardTable
 import com.clp.credit_card.tables.UsuariosTemp
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -28,7 +28,7 @@ class UserRepository (private val dataSource: DataSource) {
     fun deleteUser(id: Int): Boolean {
         return transaction {
             // First delete all associated credit cards
-            val deletedCreditCardsCount = CreditCards.deleteWhere { CreditCards.idUsuario eq id }
+            val deletedCreditCardsCount = CreditCardTable.deleteWhere { CreditCardTable.idUsuario eq id }
             if (deletedCreditCardsCount > 0) {
                 println("$deletedCreditCardsCount credit card(s) deleted for user ID $id.")
             }
@@ -48,7 +48,7 @@ class UserRepository (private val dataSource: DataSource) {
     fun deleteAllUsers() {
         return transaction {
             // First delete all associated credit cards
-            val deletedCreditCardsCount = CreditCards.deleteAll()
+            val deletedCreditCardsCount = CreditCardTable.deleteAll()
             println("$deletedCreditCardsCount credit card(s) deleted.")
 
             // Now delete all users

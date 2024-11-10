@@ -18,24 +18,6 @@ class PurchaseRepository {
             this.data = purchaseDate
             this.description = description
         }
-//        return transaction {
-            /*val purchaseId = PurchaseTable.insertAndGetId {
-                it[PurchaseTable.value] = value
-                it[PurchaseTable.data] = purchaseDate
-                it[PurchaseTable.description] = description
-            }
-            PurchaseEntity[purchaseId]*/
-            /*PurchaseEntity.new {
-                value = value
-                data = purchaseDate
-                description = description
-            }*/
-            /*PurchaseTable.insert {
-                it[PurchaseTable.value] = value
-                it[PurchaseTable.data] = purchaseDate
-                it[PurchaseTable.description] = description
-            }*/
-//        }
     }
 
 }

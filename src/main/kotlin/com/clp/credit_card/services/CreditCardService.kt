@@ -37,7 +37,7 @@ class CreditCardService(private val creditCardRepository: CreditCardRepository, 
         return (100..999).random().toString()  // Random 3-digit number
     }
 
-    fun createCreditCard(newUserId: Int): CreditCard {
+    fun createCreditCard(newUserId: Int, closingDay: Int): CreditCard {
         // Validate user ID
         if (newUserId <= 0) {
             throw IllegalArgumentException("Invalid user ID.")
@@ -52,7 +52,7 @@ class CreditCardService(private val creditCardRepository: CreditCardRepository, 
             status = StatusEnum.Ativo,
             limiteTotal = defineTotalLimit().takeIf { it >= 0 } ?: throw IllegalArgumentException("Total limit must be non-negative."),
             idUsuario = newUserId,
-            idFatura = null
+            closingDay = closingDay
         )
 
         // Attempt to add the credit card to the repository

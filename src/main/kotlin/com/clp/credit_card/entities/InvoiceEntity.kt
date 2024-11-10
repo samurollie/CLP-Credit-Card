@@ -14,5 +14,6 @@ class InvoiceEntity(id: EntityID<Int>) : IntEntity(id) {
     var closingDate by InvoiceTable.closingDate
     var isPaid by InvoiceTable.isPaid
     var paymentDate by InvoiceTable.paymentDate
-    val purchases by PurchaseEntity referrersOn PurchaseTable.invoiceId
+    var creditCard by CreditCardEntity referencedOn InvoiceTable.cardId // Refers to the credit card that this invoice belongs to
+    val purchases by PurchaseEntity referrersOn PurchaseTable.invoiceId // Refere-se a todas as compras feitas nessa fatura
 }

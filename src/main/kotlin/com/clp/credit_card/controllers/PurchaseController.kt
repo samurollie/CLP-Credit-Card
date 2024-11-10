@@ -1,6 +1,6 @@
 package com.clp.credit_card.controllers
 
-import com.clp.credit_card.entities.PurchaseEntity
+import com.clp.credit_card.models.dto.PurchaseDTO
 import com.clp.credit_card.services.PurchaseService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -10,16 +10,28 @@ import java.time.LocalDate
 @RestController
 @RequestMapping("/api/purchase")
 class PurchaseController(private val purchaseService: PurchaseService) {
-    data class PurchaseRequest(val value: Double, val description: String)
     data class PurchaseResponse(val id: Int, val value: Double, val date: LocalDate, val description: String)
+    sealed class PurchaseResponseWrapper {
+        data class Single(val purchase: PurchaseResponse) : PurchaseResponseWrapper()
+        data class Multiple(val purchases: List<PurchaseResponse>) : PurchaseResponseWrapper()
+    }
 
     @PostMapping
-    fun addPurchase(@RequestBody purchaseRequest: PurchaseRequest): ResponseEntity<PurchaseResponse> {
+    fun addPurchase(@RequestBody purchase: PurchaseDTO): ResponseEntity<PurchaseResponseWrapper> {
         return try {
             val today = LocalDate.now()
-            println(purchaseRequest)
-            val purchase = purchaseService.createPurchaseAndAddToInvoice(purchaseRequest.value, today, purchaseRequest.description)
-            val response = PurchaseResponse(purchase.id.value, purchase.value, purchase.data, purchase.description)
+            println(purchase)
+            val response = if (purchase.installments > 0) {
+                println("Creating multiple purchases")
+                val purchases = purchaseService.createPurchases(purchase, today)
+                PurchaseResponseWrapper.Multiple(purchases.map {
+                    PurchaseResponse(it.id.value, it.value, it.data, it.description)
+                })
+            } else {
+                println("Creating single purchase")
+                val singlePurchase = purchaseService.createPurchaseAndAddToInvoice(purchase, today)
+                PurchaseResponseWrapper.Single(PurchaseResponse(singlePurchase.id.value, singlePurchase.value, singlePurchase.data, singlePurchase.description))
+            }
             ResponseEntity.ok(response)
         } catch (e: IllegalArgumentException) {
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)

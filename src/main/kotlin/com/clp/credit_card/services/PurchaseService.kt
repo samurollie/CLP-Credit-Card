@@ -1,6 +1,8 @@
 package com.clp.credit_card.services
 
 import com.clp.credit_card.entities.PurchaseEntity
+import com.clp.credit_card.models.dto.PurchaseDTO
+import com.clp.credit_card.repository.CreditCardRepository
 import com.clp.credit_card.repository.InvoiceRepository
 import com.clp.credit_card.repository.PurchaseRepository
 import org.springframework.stereotype.Service
@@ -11,13 +13,40 @@ import java.time.LocalDate
 @Transactional
 class PurchaseService(
     private val purchaseRepository: PurchaseRepository,
-    private val invoiceRepository: InvoiceRepository
+    private val invoiceRepository: InvoiceRepository,
+    private val creditCardRepository: CreditCardRepository
 ) {
-    fun createPurchaseAndAddToInvoice(value: Double, purchaseDate: LocalDate, description: String): PurchaseEntity {
-        val purchase = purchaseRepository.createPurchase(value, purchaseDate, description)
-        println("Purchase created: $purchase")
-        invoiceRepository.addPurchaseToCurrentInvoice(purchase)
-        println("Purchase added to invoice")
-        return purchase
+    fun createPurchaseAndAddToInvoice(purchase: PurchaseDTO, purchaseDate: LocalDate): PurchaseEntity {
+        val newPurchase = purchaseRepository.createPurchase(purchase.value, purchaseDate, purchase.description)
+        this.addToCurrentInvoice(newPurchase, purchase.creditCard)
+        return newPurchase
+    }
+
+    fun createPurchases(purchase: PurchaseDTO, purchaseDate: LocalDate): MutableList<PurchaseEntity> {
+        val purchases = mutableListOf<PurchaseEntity>()
+        val installmentValue = purchase.value / purchase.installments
+
+        for (i in 0 until purchase.installments) {
+            val installmentDate = purchaseDate.plusMonths(i.toLong())
+            val newPurchase = purchaseRepository.createPurchase(installmentValue, installmentDate, "${purchase.description} - Parcela ${i + 1}/${purchase.installments}")
+            this.addToInvoice(newPurchase, purchase.creditCard, installmentDate)
+            purchases.add(newPurchase)
+        }
+
+        return purchases
+    }
+
+    private fun addToCurrentInvoice(purchase: PurchaseEntity, creditCardId: Int) {
+        val creditCard = creditCardRepository.getCreditCardById(creditCardId)
+            ?: throw IllegalArgumentException("Credit card not found")
+        invoiceRepository.addPurchaseToCurrentInvoice(purchase, creditCard)
+        creditCardRepository.updateCreditLimit(creditCardId, creditCard.limiteDisponivel - purchase.value)
+    }
+
+    private fun addToInvoice(purchase: PurchaseEntity, creditCardId: Int, invoiceDate: LocalDate) {
+        val creditCard = creditCardRepository.getCreditCardById(creditCardId)
+            ?: throw IllegalArgumentException("Credit card not found")
+        invoiceRepository.addPurchaseToInvoice(purchase, creditCard, invoiceDate)
+        creditCardRepository.updateCreditLimit(creditCardId, creditCard.limiteDisponivel - purchase.value)
     }
 }
