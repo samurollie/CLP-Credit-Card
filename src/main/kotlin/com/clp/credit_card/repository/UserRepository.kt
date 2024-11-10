@@ -1,8 +1,6 @@
 package com.clp.credit_card.repository
-import com.clp.credit_card.models.CreditCard
-import com.clp.credit_card.models.CreditCards
-import com.clp.credit_card.models.User
-import com.clp.credit_card.models.UsuariosTemp
+import com.clp.credit_card.tables.CreditCards
+import com.clp.credit_card.tables.UsuariosTemp
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction

@@ -8,4 +8,5 @@ object PurchaseTable : IntIdTable() {
     val description = varchar("description", 255)
     val data = date("data")
     val disputed = bool("disputed").default(false).nullable()
+    val invoiceId = reference("invoice_id", InvoiceTable)
 }
