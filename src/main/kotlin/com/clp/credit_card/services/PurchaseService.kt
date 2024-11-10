@@ -14,7 +14,8 @@ import java.time.LocalDate
 class PurchaseService(
     private val purchaseRepository: PurchaseRepository,
     private val invoiceRepository: InvoiceRepository,
-    private val creditCardRepository: CreditCardRepository
+    private val creditCardRepository: CreditCardRepository,
+    private val creditCardService: CreditCardService
 ) {
     fun createPurchaseAndAddToInvoice(purchase: PurchaseDTO, purchaseDate: LocalDate): PurchaseEntity {
         val newPurchase = purchaseRepository.createPurchase(purchase.value, purchaseDate, purchase.description)
@@ -40,13 +41,13 @@ class PurchaseService(
         val creditCard = creditCardRepository.getCreditCardById(creditCardId)
             ?: throw IllegalArgumentException("Credit card not found")
         invoiceRepository.addPurchaseToCurrentInvoice(purchase, creditCard)
-        creditCardRepository.updateCreditLimit(creditCardId, creditCard.limiteDisponivel - purchase.value)
+        creditCardService.updateCreditCardAvailableLimit(creditCardId, creditCard.limiteDisponivel - purchase.value)
     }
 
     private fun addToInvoice(purchase: PurchaseEntity, creditCardId: Int, invoiceDate: LocalDate) {
         val creditCard = creditCardRepository.getCreditCardById(creditCardId)
             ?: throw IllegalArgumentException("Credit card not found")
         invoiceRepository.addPurchaseToInvoice(purchase, creditCard, invoiceDate)
-        creditCardRepository.updateCreditLimit(creditCardId, creditCard.limiteDisponivel - purchase.value)
+        creditCardService.updateCreditCardAvailableLimit(creditCardId, creditCard.limiteDisponivel - purchase.value)
     }
 }

@@ -15,7 +15,7 @@ class CreditCardService(private val creditCardRepository: CreditCardRepository, 
     }
 
     private fun defineAvailableLimit(): Double {
-        return 1000.0
+        return 2000.0
     }
 
     private fun createCreditCardNumber(): String {
@@ -80,6 +80,12 @@ class CreditCardService(private val creditCardRepository: CreditCardRepository, 
         if (id <= 0) throw IllegalArgumentException("ID must be positive.")
         if (newLimit < 0) throw IllegalArgumentException("New limit must be non-negative.")
         return creditCardRepository.updateCreditLimit(id, newLimit)
+    }
+
+    fun updateCreditCardAvailableLimit(id: Int, newLimit: Double) {
+        if (id <= 0) throw IllegalArgumentException("ID must be positive.")
+        if (newLimit < 0) throw IllegalArgumentException("New limit must be non-negative.")
+        return creditCardRepository.updateAvailableLimit(id, newLimit)
     }
 
     fun updateCreditCardStatus(id: Int, status: StatusEnum) {
