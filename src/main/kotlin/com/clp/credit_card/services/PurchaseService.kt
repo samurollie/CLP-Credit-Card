@@ -41,7 +41,11 @@ class PurchaseService(
         val creditCard = creditCardRepository.getCreditCardById(creditCardId)
             ?: throw IllegalArgumentException("Credit card not found")
         invoiceRepository.addPurchaseToCurrentInvoice(purchase, creditCard)
-        creditCardService.updateCreditCardAvailableLimit(creditCardId, creditCard.limiteDisponivel - purchase.value)
+        try {
+            creditCardService.updateCreditCardAvailableLimit(creditCardId, creditCard.limiteDisponivel - purchase.value)
+        } catch (e: IllegalArgumentException) {
+            throw IllegalArgumentException("Limite disponível insuficiente")
+        }
     }
 
     private fun addToInvoice(purchase: PurchaseEntity, creditCardId: Int, invoiceDate: LocalDate) {

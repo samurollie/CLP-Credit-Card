@@ -8,7 +8,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 class PurchaseEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object: IntEntityClass<PurchaseEntity>(PurchaseTable)
 
-    var data by PurchaseTable.data
+    var date by PurchaseTable.data
     var value by PurchaseTable.value
     var description by PurchaseTable.description
     var disputed by PurchaseTable.disputed

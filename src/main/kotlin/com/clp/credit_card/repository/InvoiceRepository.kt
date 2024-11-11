@@ -5,6 +5,7 @@ import com.clp.credit_card.entities.InvoiceEntity
 import com.clp.credit_card.entities.PurchaseEntity
 import com.clp.credit_card.models.CreditCard
 import com.clp.credit_card.tables.InvoiceTable
+import com.clp.credit_card.tables.PurchaseTable
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.javatime.month
@@ -68,6 +69,7 @@ class InvoiceRepository {
             val currentInvoice = getCurrentInvoice(creditCard.id)
             if (currentInvoice != null) {
                 purchase.invoice = currentInvoice
+                currentInvoice.value += purchase.value
             } else {
                 val newInvoice = createInvoice(creditCard, purchase.value)
                 purchase.invoice = newInvoice
@@ -79,6 +81,7 @@ class InvoiceRepository {
         transaction {
             val invoice = getInvoiceByDate(creditCard.id, invoiceDate) ?: createInvoice(purchase.value, creditCard, invoiceDate.month, java.time.Year.of(invoiceDate.year))
             purchase.invoice = invoice
+            invoice.value += purchase.value
         }
     }
 
@@ -97,5 +100,11 @@ class InvoiceRepository {
                     (InvoiceTable.closingDate.year() eq invoiceDate.year) and
                     (InvoiceTable.closingDate.month() eq invoiceDate.month.value)
         }.firstOrNull()
+    }
+
+    fun getAllInvoices(cardId: Int): List<InvoiceEntity> {
+        return transaction {
+            InvoiceEntity.find { InvoiceTable.cardId eq cardId }.toList()
+        }
     }
 }
