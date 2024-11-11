@@ -29,7 +29,7 @@ class PurchaseController(private val purchaseService: PurchaseService) {
                 })
             } else {
                 println("Creating single purchase")
-                val singlePurchase = purchaseService.createPurchaseAndAddToInvoice(purchase, today)
+                val singlePurchase = purchaseService.createPurchase(purchase, today)
                 PurchaseResponseWrapper.Single(PurchaseResponse(singlePurchase.id.value, singlePurchase.value, singlePurchase.date, singlePurchase.description))
             }
             ResponseEntity.ok(response)

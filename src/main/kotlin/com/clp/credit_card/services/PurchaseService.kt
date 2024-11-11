@@ -17,7 +17,7 @@ class PurchaseService(
     private val creditCardRepository: CreditCardRepository,
     private val creditCardService: CreditCardService
 ) {
-    fun createPurchaseAndAddToInvoice(purchase: PurchaseDTO, purchaseDate: LocalDate): PurchaseEntity {
+    fun createPurchase(purchase: PurchaseDTO, purchaseDate: LocalDate): PurchaseEntity {
         val newPurchase = purchaseRepository.createPurchase(purchase.value, purchaseDate, purchase.description)
         this.addToCurrentInvoice(newPurchase, purchase.creditCard)
         return newPurchase

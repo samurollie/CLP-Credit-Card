@@ -15,14 +15,15 @@ import java.time.Year
 @RestController
 @RequestMapping("/api/invoices")
 class InvoiceController(private val invoiceService: InvoiceService) {
-    @GetMapping
-    fun getAllInvoices(@PathVariable cardId: Int, @PathVariable withPurchases: Boolean): ResponseEntity<List<InvoiceResponseWrapper>> {
+    @GetMapping("/all")
+    fun getAllInvoices(@RequestParam cardId: Int, @RequestParam withPurchases: Boolean): ResponseEntity<List<InvoiceResponseWrapper>> {
         return try {
             val invoices : List<InvoiceResponseWrapper>;
             if (withPurchases) {
                 invoices = invoiceService.getAllInvoicesWithPurchases(cardId)
             } else {
                 invoices = invoiceService.getAllInvoices(cardId)
+                println(invoices)
             }
             ResponseEntity.ok(invoices)
         } catch (e: IllegalArgumentException) {
@@ -33,13 +34,16 @@ class InvoiceController(private val invoiceService: InvoiceService) {
     }
 
     @GetMapping
-    fun getInvoice (@PathVariable cardId: Int, @PathVariable month:Month, @PathVariable year: Year, @PathVariable withPurchases: Boolean): ResponseEntity<InvoiceResponseWrapper> {
+    fun getInvoice (@RequestParam cardId: Int, @RequestParam month:String, @RequestParam year: String, @RequestParam withPurchases: Boolean): ResponseEntity<InvoiceResponseWrapper> {
         return try {
             val invoices : InvoiceResponseWrapper;
+            val tempDate = LocalDate.of(year.toInt(), month.toInt(), 1)
+            val monthAsDate = tempDate.month
+            val yearAsDate = Year.of(tempDate.year)
             if (withPurchases) {
-                invoices = invoiceService.getInvoiceWithPurchases(cardId, month, year)
+                invoices = invoiceService.getInvoiceWithPurchases(cardId, monthAsDate, yearAsDate)
             } else {
-                invoices = invoiceService.getInvoice(cardId, month, year)
+                invoices = invoiceService.getInvoice(cardId, monthAsDate, yearAsDate)
             }
             ResponseEntity.ok(invoices)
         } catch (e: IllegalArgumentException) {
@@ -50,9 +54,38 @@ class InvoiceController(private val invoiceService: InvoiceService) {
     }
 
     @GetMapping("/pay/{id}")
-    fun payInvoice (@PathVariable id: String) : ResponseEntity<String>{
-        val barCode = (1..12).map { (0..9).random() }.joinToString("")
+    fun getBarCode (@PathVariable id: String) : ResponseEntity<String>{
+        val barCode = (1..48).map { (0..9).random() }.joinToString("")
         return ResponseEntity.ok(barCode)
     }
 
+    @GetMapping("/pay")
+    fun getCurrentBarCode() : ResponseEntity<String> {
+        val barCode = (1..48).map { (0..9).random() }.joinToString("")
+        return ResponseEntity.ok(barCode)
+    }
+
+    @PostMapping("/pay/{id}")
+    fun payInvoice (@PathVariable id: Int, @RequestParam cardId: Int) : ResponseEntity<String>{
+        return try {
+            invoiceService.payInvoice(id, cardId)
+            ResponseEntity.ok("Invoice paid successfully")
+        } catch (e: IllegalArgumentException) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
+        } catch (e: Exception) {
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
+        }
+    }
+
+    @PostMapping("/pay")
+    fun payCurrentInvoice (@RequestParam cardId: Int) : ResponseEntity<String>{
+        return try {
+            invoiceService.payCurrentInvoice(cardId)
+            ResponseEntity.ok("Invoice paid successfully")
+        } catch (e: IllegalArgumentException) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
+        } catch (e: Exception) {
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
+        }
+    }
 }

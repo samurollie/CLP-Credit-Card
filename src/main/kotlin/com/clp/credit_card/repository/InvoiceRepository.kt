@@ -5,7 +5,6 @@ import com.clp.credit_card.entities.InvoiceEntity
 import com.clp.credit_card.entities.PurchaseEntity
 import com.clp.credit_card.models.CreditCard
 import com.clp.credit_card.tables.InvoiceTable
-import com.clp.credit_card.tables.PurchaseTable
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.javatime.month
@@ -14,6 +13,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
 import java.time.Month
+import java.time.Year
 
 @Repository
 class InvoiceRepository {
@@ -66,7 +66,7 @@ class InvoiceRepository {
 
     fun addPurchaseToCurrentInvoice(purchase: PurchaseEntity, creditCard: CreditCard) {
         transaction {
-            val currentInvoice = getCurrentInvoice(creditCard.id)
+            val currentInvoice = getCurrentNotPaidInvoice(creditCard.id)
             if (currentInvoice != null) {
                 purchase.invoice = currentInvoice
                 currentInvoice.value += purchase.value
@@ -79,22 +79,27 @@ class InvoiceRepository {
 
     fun addPurchaseToInvoice(purchase: PurchaseEntity, creditCard: CreditCard, invoiceDate: LocalDate) {
         transaction {
-            val invoice = getInvoiceByDate(creditCard.id, invoiceDate) ?: createInvoice(purchase.value, creditCard, invoiceDate.month, java.time.Year.of(invoiceDate.year))
+            val invoice = getInvoiceByDate(creditCard.id, invoiceDate) ?: createInvoice(0.0, creditCard, invoiceDate.month, java.time.Year.of(invoiceDate.year))
             purchase.invoice = invoice
-            invoice.value += purchase.value
+            invoice.value+= purchase.value
         }
     }
 
-    private fun getCurrentInvoice(creditCard: Int): InvoiceEntity? {
-        println("Getting current invoice")
-        val currentInvoice = InvoiceEntity.find { (InvoiceTable.isPaid eq false) and (InvoiceTable.cardId eq creditCard) }
+    fun getCurrentInvoice (creditCard: Int): InvoiceEntity? {
+        val currentInvoice = InvoiceEntity.find { (InvoiceTable.cardId eq creditCard) }
             .orderBy(InvoiceTable.dueDate to SortOrder.DESC)
             .firstOrNull()
-        println("Current invoice: $currentInvoice")
         return currentInvoice
     }
 
-    private fun getInvoiceByDate(creditCard: Int, invoiceDate: LocalDate): InvoiceEntity? {
+    fun getCurrentNotPaidInvoice(creditCard: Int): InvoiceEntity? {
+        val currentInvoice = InvoiceEntity.find { (InvoiceTable.isPaid eq false) and (InvoiceTable.cardId eq creditCard) }
+            .orderBy(InvoiceTable.dueDate to SortOrder.DESC)
+            .firstOrNull()
+        return currentInvoice
+    }
+
+    fun getInvoiceByDate(creditCard: Int, invoiceDate: LocalDate): InvoiceEntity? {
         return InvoiceEntity.find {
             (InvoiceTable.cardId eq creditCard) and
                     (InvoiceTable.closingDate.year() eq invoiceDate.year) and
@@ -105,6 +110,27 @@ class InvoiceRepository {
     fun getAllInvoices(cardId: Int): List<InvoiceEntity> {
         return transaction {
             InvoiceEntity.find { InvoiceTable.cardId eq cardId }.toList()
+        }
+    }
+
+    fun getInvoiceByDate(creditCard: Int, month:Month, year: Year): InvoiceEntity? {
+        return InvoiceEntity.find {
+            (InvoiceTable.cardId eq creditCard) and
+                    (InvoiceTable.closingDate.year() eq year.value) and
+                    (InvoiceTable.closingDate.month() eq month.value)
+        }.firstOrNull()
+    }
+
+    fun getInvoiceById(id: Int): InvoiceEntity? {
+        return transaction {
+            InvoiceEntity.find{InvoiceTable.id eq id}.firstOrNull()
+        }
+    }
+
+    fun payInvoice(invoice: InvoiceEntity){
+        transaction {
+            invoice.isPaid = true
+            invoice.paymentDate = LocalDate.now()
         }
     }
 }
