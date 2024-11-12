@@ -14,6 +14,7 @@ import java.time.LocalDate
  * @property cardId The ID of the associated credit card.
  */
 data class InvoiceResponse(
+    val id: Int,
     val value: Double,
     val dueDate: LocalDate,
     val closingDate: LocalDate,
@@ -30,6 +31,7 @@ data class InvoiceResponse(
  */
 fun InvoiceEntity.toInvoiceResponse(): InvoiceResponse {
     return InvoiceResponse(
+        id = this.id.value,
         value = this.value,
         dueDate = this.dueDate,
         closingDate = this.closingDate,

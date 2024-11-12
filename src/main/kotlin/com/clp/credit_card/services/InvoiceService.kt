@@ -137,7 +137,17 @@ class InvoiceService(
         } else if (invoice.isPaid) {
             throw IllegalArgumentException("Invoice already paid")
         }
+
+        val creditCard = creditCardRepository.getCreditCardById(cardId)
+        if (creditCard == null) {
+            throw IllegalArgumentException("Credit card not found")
+        }
+        if (invoice.creditCard.id.value != creditCard.id) {
+            throw IllegalArgumentException("Invoice does not belong to this credit card")
+        }
+
         invoiceRepository.payInvoice(invoice)
+        creditCardRepository.updateCreditLimit(creditCard.id, invoice.value + creditCard.limiteDisponivel)
     }
 
     /**

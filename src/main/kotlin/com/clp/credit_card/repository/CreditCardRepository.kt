@@ -76,8 +76,11 @@ class CreditCardRepository(private val dataSource: DataSource) {
      */
     fun updateCreditLimit(id: Int, newLimit: Double) {
         transaction {
-            val novoDisponivel = newLimit + CreditCardTable.selectAll().where { CreditCardTable.id eq id }
+            val limiteDisponivelAntigo = CreditCardTable.selectAll().where { CreditCardTable.id eq id }
                 .single()[CreditCardTable.limiteDisponivel]
+            val limiteTotalAntigo  = CreditCardTable.selectAll().where { CreditCardTable.id eq id }
+                .single()[CreditCardTable.limiteTotal]
+            val novoDisponivel = newLimit - (limiteTotalAntigo - limiteDisponivelAntigo)
 
             CreditCardTable.update({ CreditCardTable.id eq id }) {
                 it[limiteTotal] = newLimit
