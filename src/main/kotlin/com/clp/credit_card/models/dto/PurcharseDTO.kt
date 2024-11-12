@@ -32,7 +32,22 @@ fun PurchaseEntity.toPurchaseResponse(): PurchaseResponse {
     )
 }
 
+/**
+ * Wrapper for PurchaseResponse.
+ */
 sealed class PurchaseResponseWrapper {
+
+    /**
+     * Represents a single purchase response.
+     *
+     * @property purchase The purchase response.
+     */
     data class Single(val purchase: PurchaseResponse) : PurchaseResponseWrapper()
+
+    /**
+     * Represents multiple purchase responses.
+     *
+     * @property purchases The list of purchase responses.
+     */
     data class Multiple(val purchases: List<PurchaseResponse>) : PurchaseResponseWrapper()
 }

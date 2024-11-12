@@ -6,7 +6,10 @@ import com.clp.credit_card.models.dto.PurchaseResponseWrapper
 import com.clp.credit_card.services.PurchaseService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
 
@@ -14,9 +17,14 @@ import java.time.LocalDate
 @RequestMapping("/api/purchase")
 class PurchaseController(private val purchaseService: PurchaseService) {
 
-
-    @PostMapping
-    fun addPurchase(@RequestBody purchase: PurchaseDTO): ResponseEntity<PurchaseResponseWrapper> {
+    /**
+ * Endpoint to add a new purchase.
+ *
+ * @param purchase the purchase details provided in the request body
+ * @return a ResponseEntity containing a PurchaseResponseWrapper
+ */
+@PostMapping
+fun addPurchase(@RequestBody purchase: PurchaseDTO): ResponseEntity<PurchaseResponseWrapper> {
         println(purchase)
 
         return try {
@@ -30,7 +38,14 @@ class PurchaseController(private val purchaseService: PurchaseService) {
             } else {
                 println("Creating single purchase")
                 val singlePurchase = purchaseService.createPurchase(purchase, today)
-                PurchaseResponseWrapper.Single(PurchaseResponse(singlePurchase.id.value, singlePurchase.value, singlePurchase.date, singlePurchase.description))
+                PurchaseResponseWrapper.Single(
+                    PurchaseResponse(
+                        singlePurchase.id.value,
+                        singlePurchase.value,
+                        singlePurchase.date,
+                        singlePurchase.description
+                    )
+                )
             }
             ResponseEntity.ok(response)
         } catch (e: IllegalArgumentException) {

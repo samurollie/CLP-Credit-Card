@@ -1,14 +1,18 @@
 package com.clp.credit_card.repository
+
 import com.clp.credit_card.tables.CreditCardTable
 import com.clp.credit_card.tables.UsuariosTemp
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteAll
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Repository
 import javax.sql.DataSource
 
 @Repository
-class UserRepository (private val dataSource: DataSource) {
+class UserRepository(private val dataSource: DataSource) {
 
     init {
         // Initialize Exposed with Spring's DataSource
@@ -28,7 +32,7 @@ class UserRepository (private val dataSource: DataSource) {
     fun deleteUser(id: Int): Boolean {
         return transaction {
             // First delete all associated credit cards
-            val deletedCreditCardsCount = CreditCardTable.deleteWhere { CreditCardTable.idUsuario eq id }
+            val deletedCreditCardsCount = CreditCardTable.deleteWhere { idUsuario eq id }
             if (deletedCreditCardsCount > 0) {
                 println("$deletedCreditCardsCount credit card(s) deleted for user ID $id.")
             }

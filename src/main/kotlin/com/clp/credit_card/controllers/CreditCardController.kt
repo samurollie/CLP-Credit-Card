@@ -1,4 +1,5 @@
 package com.clp.credit_card.controllers
+
 import com.clp.credit_card.models.CreditCard
 import com.clp.credit_card.models.StatusEnum
 import com.clp.credit_card.services.CreditCardService
@@ -11,6 +12,13 @@ import java.time.LocalDate
 @RequestMapping("/api/credit-card")
 class CreditCardController(private val creditCardService: CreditCardService) {
 
+    /**
+     * Endpoint to create a new credit card.
+     *
+     * @param newUserId The ID of the user for whom the credit card is being created.
+     * @param closingDay The closing day of the credit card.
+     * @return ResponseEntity containing the created CreditCard object or an error status.
+     */
     @PostMapping()
     fun createCreditCard(@RequestParam newUserId: Int, @RequestParam closingDay: Int): ResponseEntity<CreditCard> {
         return try {
@@ -25,6 +33,11 @@ class CreditCardController(private val creditCardService: CreditCardService) {
         }
     }
 
+    /**
+     * Endpoint to create a new user.
+     *
+     * @return ResponseEntity containing the ID of the created user or an error status.
+     */
     @PostMapping("/create_user")
     fun createUser(): ResponseEntity<Int> {
         return try {
@@ -39,7 +52,12 @@ class CreditCardController(private val creditCardService: CreditCardService) {
         }
     }
 
-
+    /**
+     * Endpoint to retrieve a credit card by its ID.
+     *
+     * @param id The ID of the credit card to retrieve.
+     * @return ResponseEntity containing the CreditCard object or an error status.
+     */
     @GetMapping("/{id}")
     fun getCreditCard(@PathVariable id: Int): ResponseEntity<CreditCard> {
         return try {
@@ -57,7 +75,12 @@ class CreditCardController(private val creditCardService: CreditCardService) {
         }
     }
 
-
+    /**
+     * Endpoint to delete a credit card by its ID.
+     *
+     * @param id The ID of the credit card to delete.
+     * @return ResponseEntity containing the deleted CreditCard object or an error status.
+     */
     @DeleteMapping("/{id}")
     fun deleteCreditCard(@PathVariable id: Int): ResponseEntity<CreditCard> {
         return try {
@@ -82,6 +105,13 @@ class CreditCardController(private val creditCardService: CreditCardService) {
         }
     }
 
+    /**
+     * Endpoint to update the credit limit of a credit card.
+     *
+     * @param id The ID of the credit card to update.
+     * @param limiteTotal The new credit limit to set.
+     * @return ResponseEntity containing a success message or an error status.
+     */
     @PatchMapping("/{id}/limit")
     fun updateCreditLimit(
         @PathVariable id: Int,
@@ -98,11 +128,18 @@ class CreditCardController(private val creditCardService: CreditCardService) {
             ResponseEntity.status(HttpStatus.NOT_FOUND).body("Credit card not found") // 404 Not Found
         } catch (e: Exception) {
             // General error handling
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: ${e.message}") // 500 Internal Server Error
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("An error occurred: ${e.message}") // 500 Internal Server Error
         }
     }
 
-
+    /**
+     * Endpoint to update the credit limit of a credit card.
+     *
+     * @param id The ID of the credit card to update.
+     * @param limiteTotal The new credit limit to set.
+     * @return ResponseEntity containing a success message or an error status.
+     */
     @PatchMapping("/{id}/status")
     fun updateCardStatus(
         @PathVariable id: Int,
@@ -120,7 +157,13 @@ class CreditCardController(private val creditCardService: CreditCardService) {
         }
     }
 
-
+    /**
+     * Endpoint to update the expiration date of a credit card.
+     *
+     * @param id The ID of the credit card to update.
+     * @param dataValidade The new expiration date to set.
+     * @return ResponseEntity containing a success message or an error status.
+     */
     @PatchMapping("/{id}/expiration")
     fun updateExpirationDate(
         @PathVariable id: Int,
@@ -138,6 +181,11 @@ class CreditCardController(private val creditCardService: CreditCardService) {
         }
     }
 
+    /**
+     * Endpoint to retrieve all credit cards.
+     *
+     * @return ResponseEntity containing a list of all CreditCard objects or an error status.
+     */
     @GetMapping("/all")
     fun getAllCreditCards(): ResponseEntity<List<CreditCard>> {
         return try {

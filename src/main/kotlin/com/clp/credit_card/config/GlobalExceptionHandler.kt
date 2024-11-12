@@ -9,13 +9,25 @@ import org.springframework.web.server.ResponseStatusException
 @ControllerAdvice
 class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResponseStatusException::class)
-    fun handleResponseStatusException(e: ResponseStatusException): ResponseEntity<String> {
-        val messageParts = e.message?.substringAfter("\"")?.substringBefore("\"")
+    /**
+ * Handles `ResponseStatusException` and returns a `ResponseEntity` with the appropriate status code and message.
+ *
+ * @param e the `ResponseStatusException` to handle
+ * @return a `ResponseEntity` containing the status code and message
+ */
+@ExceptionHandler(ResponseStatusException::class)
+fun handleResponseStatusException(e: ResponseStatusException): ResponseEntity<String> {
+        val messageParts = e.message.substringAfter("\"")?.substringBefore("\"")
         val body = messageParts ?: "Unknown error"
         return ResponseEntity.status(e.statusCode).body(body)
     }
 
+/**
+     * Handles generic `Exception` and returns a `ResponseEntity` with a status code of 500 and the error message.
+     *
+     * @param e the `Exception` to handle
+     * @return a `ResponseEntity` containing the status code and message
+     */
     @ExceptionHandler(Exception::class)
     fun handleException(e: Exception): ResponseEntity<String> {
         val messageParts = e.message?.substringAfter("\"")?.substringBefore("\"")

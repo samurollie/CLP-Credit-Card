@@ -20,19 +20,24 @@ class InvoiceService(
     private val creditCardRepository: CreditCardRepository
 ) {
     fun getAllInvoicesWithPurchases(cardId: Int): List<InvoiceResponseWrapper> {
-        val response : MutableList<InvoiceResponseWrapper.withPurchase> = mutableListOf()
+        val response: MutableList<InvoiceResponseWrapper.withPurchase> = mutableListOf()
         val invoices = invoiceRepository.getAllInvoices(cardId)
         invoices.forEach {
             val purchases = purchaseRepository.getAllPurchasesByInvoice(it.id.value)
 
-            response.add(InvoiceResponseWrapper.withPurchase(it.toInvoiceResponse(), PurchaseResponseWrapper.Multiple(purchases.map { it.toPurchaseResponse() })))
+            response.add(
+                InvoiceResponseWrapper.withPurchase(
+                    it.toInvoiceResponse(),
+                    PurchaseResponseWrapper.Multiple(purchases.map { it.toPurchaseResponse() })
+                )
+            )
         }
 
         return (response)
     }
 
     fun getAllInvoices(cardId: Int): List<InvoiceResponseWrapper.onlyInvoice> {
-        val response : MutableList<InvoiceResponseWrapper.onlyInvoice> = mutableListOf()
+        val response: MutableList<InvoiceResponseWrapper.onlyInvoice> = mutableListOf()
         val invoices = invoiceRepository.getAllInvoices(cardId)
         invoices.forEach {
             response.add(InvoiceResponseWrapper.onlyInvoice(it.toInvoiceResponse()))
@@ -47,7 +52,10 @@ class InvoiceService(
             throw IllegalArgumentException("Invoice not found")
         }
         val purchases = purchaseRepository.getAllPurchasesByInvoice(invoice.id.value)
-        return InvoiceResponseWrapper.withPurchase(invoice.toInvoiceResponse(), PurchaseResponseWrapper.Multiple(purchases.map { it.toPurchaseResponse() }))
+        return InvoiceResponseWrapper.withPurchase(
+            invoice.toInvoiceResponse(),
+            PurchaseResponseWrapper.Multiple(purchases.map { it.toPurchaseResponse() })
+        )
     }
 
     fun getInvoice(cardId: Int, month: Month, year: Year): InvoiceResponseWrapper {
