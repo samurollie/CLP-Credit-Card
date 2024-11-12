@@ -8,7 +8,11 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
-class CreditCardService(private val creditCardRepository: CreditCardRepository, private val userRepository: UserRepository) { // Dependency injection
+class CreditCardService(
+    private val creditCardRepository: CreditCardRepository,
+    private val userRepository: UserRepository,
+    private val invoiceService: InvoiceService
+) { // Dependency injection
 
     private fun defineTotalLimit(): Double {
         return 2000.0
@@ -73,6 +77,7 @@ class CreditCardService(private val creditCardRepository: CreditCardRepository, 
 
     fun deleteCreditCardById(id: Int): Boolean {
         if (id <= 0) throw IllegalArgumentException("ID must be positive.")
+        invoiceService.deleteAllInvoicesByCardId(id)
         return creditCardRepository.deleteCreditCardById(id)
     }
 

@@ -88,6 +88,7 @@ class CreditCardRepository(private val dataSource: DataSource) {
 
     fun deleteCreditCardById(id: Int): Boolean {
         return transaction {
+
             val deletedCardCount = CreditCardTable.deleteWhere { CreditCardTable.id eq id}
             if (deletedCardCount > 0) {
                 println("Credit card with number $id deleted.")

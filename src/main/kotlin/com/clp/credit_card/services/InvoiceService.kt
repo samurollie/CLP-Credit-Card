@@ -88,4 +88,20 @@ class InvoiceService(
         }
         invoiceRepository.payInvoice(invoice)
     }
+
+    fun deleteAllInvoicesByCardId(cardId: Int) {
+        // Buscar todos os invoices do cartão com o ID fornecido
+        val invoices = invoiceRepository.getAllInvoices(cardId)
+
+        // Verificar se existem invoices para o cartão
+        if (invoices.isEmpty()) {
+            throw IllegalArgumentException("No invoices found for the given card ID")
+        }
+
+        // Para cada invoice, excluir as compras associadas antes de excluir o invoice
+        invoices.forEach { invoice ->
+            purchaseRepository.deleteAllPurchasesByInvoice(invoice.id.value)
+            invoiceRepository.deleteInvoiceById(invoice.id.value) // Exclui o invoice
+        }
+    }
 }

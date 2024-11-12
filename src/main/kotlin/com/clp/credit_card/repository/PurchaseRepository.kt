@@ -24,4 +24,13 @@ class PurchaseRepository {
         }
     }
 
+    fun deleteAllPurchasesByInvoice(invoiceId: Int) {
+        transaction {
+            // Buscar todas as compras associadas ao invoiceId
+            val purchases = PurchaseEntity.find { PurchaseTable.invoiceId eq invoiceId }
+
+            // Excluir todas as compras
+            purchases.forEach { it.delete() }
+        }
+    }
 }

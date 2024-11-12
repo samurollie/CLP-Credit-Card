@@ -133,4 +133,14 @@ class InvoiceRepository {
             invoice.paymentDate = LocalDate.now()
         }
     }
+
+    fun deleteInvoiceById(id: Int) {
+        transaction {
+            // Buscar o invoice pelo ID
+            val invoice = InvoiceEntity.findById(id) ?: throw IllegalArgumentException("Invoice not found")
+
+            // Excluir o invoice
+            invoice.delete()
+        }
+    }
 }

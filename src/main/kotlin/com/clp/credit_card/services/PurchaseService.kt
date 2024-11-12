@@ -54,4 +54,8 @@ class PurchaseService(
         invoiceRepository.addPurchaseToInvoice(purchase, creditCard, invoiceDate)
         creditCardService.updateCreditCardAvailableLimit(creditCardId, creditCard.limiteDisponivel - purchase.value)
     }
+
+    fun deleteAllPurchasesByInvoice(invoiceId: Int) {
+        purchaseRepository.deleteAllPurchasesByInvoice(invoiceId)
+    }
 }
