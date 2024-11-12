@@ -6,6 +6,7 @@ import com.clp.credit_card.services.CreditCardService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
 
 @RestController
@@ -95,7 +96,7 @@ class CreditCardController(private val creditCardService: CreditCardService) {
             ResponseEntity.ok(creditCard)
         } catch (e: IllegalArgumentException) {
             // Handle invalid ID error
-            ResponseEntity.badRequest().body(null) // Return 400 Bad Request
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)// Return 400 Bad Request
         } catch (e: NoSuchElementException) {
             // Handle not found error
             ResponseEntity.status(HttpStatus.NOT_FOUND).body(null) // Return 404 Not Found

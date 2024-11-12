@@ -152,7 +152,7 @@ class InvoiceService(
 
         // Verificar se existem invoices para o cartão
         if (invoices.isEmpty()) {
-            throw IllegalArgumentException("No invoices found for the given card ID")
+            return
         }
 
         // Para cada invoice, excluir as compras associadas antes de excluir o invoice
