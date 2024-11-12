@@ -55,12 +55,12 @@ class CreditCardRepository(private val dataSource: DataSource) {
     }
 
     /**
- * Retrieves a credit card by its ID.
- *
- * @param id The ID of the credit card to retrieve.
- * @return The credit card with the specified ID, or null if not found.
- */
-fun getCreditCardById(id: Int): CreditCard? {
+     * Retrieves a credit card by its ID.
+     *
+     * @param id The ID of the credit card to retrieve.
+     * @return The credit card with the specified ID, or null if not found.
+     */
+    fun getCreditCardById(id: Int): CreditCard? {
         return transaction {
             CreditCardTable.selectAll().where { CreditCardTable.id eq id }
                 .map { toCreditCard(it) }
@@ -69,12 +69,12 @@ fun getCreditCardById(id: Int): CreditCard? {
     }
 
     /**
- * Updates the total credit limit of a credit card.
- *
- * @param id The ID of the credit card to update.
- * @param newLimit The new total credit limit to set.
- */
-fun updateCreditLimit(id: Int, newLimit: Double) {
+     * Updates the total credit limit of a credit card.
+     *
+     * @param id The ID of the credit card to update.
+     * @param newLimit The new total credit limit to set.
+     */
+    fun updateCreditLimit(id: Int, newLimit: Double) {
         transaction {
             val novoDisponivel = newLimit + CreditCardTable.selectAll().where { CreditCardTable.id eq id }
                 .single()[CreditCardTable.limiteDisponivel]
@@ -101,12 +101,6 @@ fun updateCreditLimit(id: Int, newLimit: Double) {
     }
 
     /**
-     * Updates the status of a credit card.
-     *
-     * @param id The ID of the credit card to update.
-     * @param status The new status to set.
-     */
-    fun updateCreditStatus(id: Int, status: StatusEnum) {/**
      * Updates the status of a credit card.
      *
      * @param id The ID of the credit card to update.
@@ -186,3 +180,4 @@ fun updateCreditLimit(id: Int, newLimit: Double) {
         )
     }
 }
+
