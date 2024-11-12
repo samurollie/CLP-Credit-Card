@@ -19,6 +19,12 @@ class InvoiceService(
     private val purchaseRepository: PurchaseRepository,
     private val creditCardRepository: CreditCardRepository
 ) {
+    /**
+     * Retrieves all invoices with their associated purchases for a given credit card ID.
+     *
+     * @param cardId The ID of the credit card.
+     * @return A list of InvoiceResponseWrapper objects containing invoices and their purchases.
+     */
     fun getAllInvoicesWithPurchases(cardId: Int): List<InvoiceResponseWrapper> {
         val response: MutableList<InvoiceResponseWrapper.withPurchase> = mutableListOf()
         val invoices = invoiceRepository.getAllInvoices(cardId)
@@ -36,6 +42,12 @@ class InvoiceService(
         return (response)
     }
 
+    /**
+     * Retrieves all invoices for a given credit card ID.
+     *
+     * @param cardId The ID of the credit card.
+     * @return A list of InvoiceResponseWrapper.onlyInvoice objects containing invoices.
+     */
     fun getAllInvoices(cardId: Int): List<InvoiceResponseWrapper.onlyInvoice> {
         val response: MutableList<InvoiceResponseWrapper.onlyInvoice> = mutableListOf()
         val invoices = invoiceRepository.getAllInvoices(cardId)
@@ -46,6 +58,15 @@ class InvoiceService(
         return (response)
     }
 
+    /**
+     * Retrieves an invoice with its associated purchases for a given credit card ID, month, and year.
+     *
+     * @param cardId The ID of the credit card.
+     * @param month The month of the invoice.
+     * @param year The year of the invoice.
+     * @return An InvoiceResponseWrapper object containing the invoice and its purchases.
+     * @throws IllegalArgumentException if the invoice is not found.
+     */
     fun getInvoiceWithPurchases(cardId: Int, month: Month, year: Year): InvoiceResponseWrapper {
         val invoice = invoiceRepository.getInvoiceByDate(cardId, month, year)
         if (invoice == null) {
@@ -58,6 +79,15 @@ class InvoiceService(
         )
     }
 
+    /**
+     * Retrieves an invoice for a given credit card ID, month, and year.
+     *
+     * @param cardId The ID of the credit card.
+     * @param month The month of the invoice.
+     * @param year The year of the invoice.
+     * @return An InvoiceResponseWrapper object containing the invoice.
+     * @throws IllegalArgumentException if the invoice is not found.
+     */
     fun getInvoice(cardId: Int, month: Month, year: Year): InvoiceResponseWrapper {
         val invoice = invoiceRepository.getInvoiceByDate(cardId, month, year)
         if (invoice == null) {
@@ -66,6 +96,13 @@ class InvoiceService(
         return InvoiceResponseWrapper.onlyInvoice(invoice.toInvoiceResponse())
     }
 
+    /**
+     * Marks an invoice as paid for a given invoice ID and credit card ID.
+     *
+     * @param id The ID of the invoice to be paid.
+     * @param cardId The ID of the credit card associated with the invoice.
+     * @throws IllegalArgumentException if the invoice is not found, already paid, or does not belong to the given credit card.
+     */
     fun payInvoice(id: Int, cardId: Int) {
         val invoice = invoiceRepository.getInvoiceById(id)
 
@@ -87,6 +124,12 @@ class InvoiceService(
         creditCardRepository.updateCreditLimit(creditCard.id, invoice.value + creditCard.limiteDisponivel)
     }
 
+    /**
+     * Marks the current invoice as paid for a given credit card ID.
+     *
+     * @param cardId The ID of the credit card associated with the invoice.
+     * @throws IllegalArgumentException if the invoice is not found or is already paid.
+     */
     fun payCurrentInvoice(cardId: Int) {
         val invoice = invoiceRepository.getCurrentInvoice(cardId)
         if (invoice == null) {
@@ -97,6 +140,12 @@ class InvoiceService(
         invoiceRepository.payInvoice(invoice)
     }
 
+    /**
+     * Deletes all invoices and their associated purchases for a given credit card ID.
+     *
+     * @param cardId The ID of the credit card.
+     * @throws IllegalArgumentException if no invoices are found for the given card ID.
+     */
     fun deleteAllInvoicesByCardId(cardId: Int) {
         // Buscar todos os invoices do cartão com o ID fornecido
         val invoices = invoiceRepository.getAllInvoices(cardId)
