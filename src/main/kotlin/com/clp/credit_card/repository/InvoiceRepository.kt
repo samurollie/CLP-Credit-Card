@@ -26,8 +26,9 @@ class InvoiceRepository {
      * @return The newly created InvoiceEntity.
      * @throws IllegalArgumentException if the CreditCardEntity is not found.
      */
-    fun createInvoice(creditCard: CreditCard, value: Double) : InvoiceEntity {
-        val cardAsEntity = CreditCardEntity.findById(creditCard.id) ?: throw IllegalArgumentException("CreditCardEntity not found")
+    fun createInvoice(creditCard: CreditCard, value: Double): InvoiceEntity {
+        val cardAsEntity =
+            CreditCardEntity.findById(creditCard.id) ?: throw IllegalArgumentException("CreditCardEntity not found")
         val closingDate = LocalDate.of(LocalDate.now().year, LocalDate.now().month, creditCard.closingDay)
 
         val newInvoice = InvoiceEntity.new {
@@ -50,12 +51,18 @@ class InvoiceRepository {
      * @return The newly created InvoiceEntity.
      * @throws IllegalArgumentException if the CreditCardEntity is not found.
      */
-    fun createInvoice(value: Double?, creditCard: CreditCard, closingMonth: Month, closingYear: java.time.Year) : InvoiceEntity {
-        val cardAsEntity = CreditCardEntity.findById(creditCard.id) ?: throw IllegalArgumentException("CreditCardEntity not found")
+    fun createInvoice(
+        value: Double?,
+        creditCard: CreditCard,
+        closingMonth: Month,
+        closingYear: Year
+    ): InvoiceEntity {
+        val cardAsEntity =
+            CreditCardEntity.findById(creditCard.id) ?: throw IllegalArgumentException("CreditCardEntity not found")
         val closingDate = LocalDate.of(closingYear.value, closingMonth, creditCard.closingDay)
 
         val newInvoice = InvoiceEntity.new {
-            this.value = value?: 0.0
+            this.value = value ?: 0.0
             dueDate = closingDate.plusDays(5)
             this.closingDate = closingDate
             this.creditCard = cardAsEntity
@@ -79,13 +86,18 @@ class InvoiceRepository {
 
     fun addPurchaseToInvoice(purchase: PurchaseEntity, creditCard: CreditCard, invoiceDate: LocalDate) {
         transaction {
-            val invoice = getInvoiceByDate(creditCard.id, invoiceDate) ?: createInvoice(0.0, creditCard, invoiceDate.month, java.time.Year.of(invoiceDate.year))
+            val invoice = getInvoiceByDate(creditCard.id, invoiceDate) ?: createInvoice(
+                0.0,
+                creditCard,
+                invoiceDate.month,
+                Year.of(invoiceDate.year)
+            )
             purchase.invoice = invoice
-            invoice.value+= purchase.value
+            invoice.value += purchase.value
         }
     }
 
-    fun getCurrentInvoice (creditCard: Int): InvoiceEntity? {
+    fun getCurrentInvoice(creditCard: Int): InvoiceEntity? {
         val currentInvoice = InvoiceEntity.find { (InvoiceTable.cardId eq creditCard) }
             .orderBy(InvoiceTable.dueDate to SortOrder.DESC)
             .firstOrNull()
@@ -93,9 +105,10 @@ class InvoiceRepository {
     }
 
     fun getCurrentNotPaidInvoice(creditCard: Int): InvoiceEntity? {
-        val currentInvoice = InvoiceEntity.find { (InvoiceTable.isPaid eq false) and (InvoiceTable.cardId eq creditCard) }
-            .orderBy(InvoiceTable.dueDate to SortOrder.DESC)
-            .firstOrNull()
+        val currentInvoice =
+            InvoiceEntity.find { (InvoiceTable.isPaid eq false) and (InvoiceTable.cardId eq creditCard) }
+                .orderBy(InvoiceTable.dueDate to SortOrder.DESC)
+                .firstOrNull()
         return currentInvoice
     }
 
@@ -113,7 +126,7 @@ class InvoiceRepository {
         }
     }
 
-    fun getInvoiceByDate(creditCard: Int, month:Month, year: Year): InvoiceEntity? {
+    fun getInvoiceByDate(creditCard: Int, month: Month, year: Year): InvoiceEntity? {
         return InvoiceEntity.find {
             (InvoiceTable.cardId eq creditCard) and
                     (InvoiceTable.closingDate.year() eq year.value) and
@@ -123,11 +136,11 @@ class InvoiceRepository {
 
     fun getInvoiceById(id: Int): InvoiceEntity? {
         return transaction {
-            InvoiceEntity.find{InvoiceTable.id eq id}.firstOrNull()
+            InvoiceEntity.find { InvoiceTable.id eq id }.firstOrNull()
         }
     }
 
-    fun payInvoice(invoice: InvoiceEntity){
+    fun payInvoice(invoice: InvoiceEntity) {
         transaction {
             invoice.isPaid = true
             invoice.paymentDate = LocalDate.now()

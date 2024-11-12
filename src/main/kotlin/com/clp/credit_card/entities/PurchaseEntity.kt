@@ -5,12 +5,36 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 
+/**
+ * Entity class representing a purchase.
+ *
+ * @property id The unique identifier of the purchase.
+ */
 class PurchaseEntity(id: EntityID<Int>) : IntEntity(id) {
-    companion object: IntEntityClass<PurchaseEntity>(PurchaseTable)
+    companion object : IntEntityClass<PurchaseEntity>(PurchaseTable)
 
+    /**
+     * The date of the purchase.
+     */
     var date by PurchaseTable.data
+
+    /**
+     * The value of the purchase.
+     */
     var value by PurchaseTable.value
+
+    /**
+     * The description of the purchase.
+     */
     var description by PurchaseTable.description
+
+    /**
+     * Indicates if the purchase is disputed.
+     */
     var disputed by PurchaseTable.disputed
-    var invoice by InvoiceEntity referencedOn PurchaseTable.invoiceId // Refere-se a fatura a qual essa compra pertence
+
+    /**
+     * The invoice to which this purchase belongs.
+     */
+    var invoice by InvoiceEntity referencedOn PurchaseTable.invoiceId
 }

@@ -1,7 +1,8 @@
 package com.clp.credit_card.repository
+
 import com.clp.credit_card.models.CreditCard
-import com.clp.credit_card.tables.CreditCardTable
 import com.clp.credit_card.models.StatusEnum
+import com.clp.credit_card.tables.CreditCardTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -17,6 +18,12 @@ class CreditCardRepository(private val dataSource: DataSource) {
         Database.connect(dataSource)
     }
 
+    /**
+     * Adds a new credit card to the database.
+     *
+     * @param card The credit card to be added.
+     * @return The added credit card with the generated ID.
+     */
     fun addCreditCard(card: CreditCard): CreditCard {
         transaction {
             // Use insertAndGetId to insert and get the generated ID
@@ -36,12 +43,23 @@ class CreditCardRepository(private val dataSource: DataSource) {
         return card
     }
 
+    /**
+     * Retrieves all credit cards from the database.
+     *
+     * @return A list of all credit cards.
+     */
     fun getAllCreditCards(): List<CreditCard> {
         return transaction {
             CreditCardTable.selectAll().map { toCreditCard(it) }
         }
     }
 
+    /**
+     * Retrieves a credit card by its ID.
+     *
+     * @param id The ID of the credit card to retrieve.
+     * @return The credit card with the specified ID, or null if not found.
+     */
     fun getCreditCardById(id: Int): CreditCard? {
         return transaction {
             CreditCardTable.selectAll().where { CreditCardTable.id eq id }
@@ -50,9 +68,16 @@ class CreditCardRepository(private val dataSource: DataSource) {
         }
     }
 
+    /**
+     * Updates the total credit limit of a credit card.
+     *
+     * @param id The ID of the credit card to update.
+     * @param newLimit The new total credit limit to set.
+     */
     fun updateCreditLimit(id: Int, newLimit: Double) {
         transaction {
-            val novoDisponivel = newLimit + CreditCardTable.selectAll().where { CreditCardTable.id eq id }.single()[CreditCardTable.limiteDisponivel]
+            val novoDisponivel = newLimit + CreditCardTable.selectAll().where { CreditCardTable.id eq id }
+                .single()[CreditCardTable.limiteDisponivel]
 
             CreditCardTable.update({ CreditCardTable.id eq id }) {
                 it[limiteTotal] = newLimit
@@ -61,6 +86,12 @@ class CreditCardRepository(private val dataSource: DataSource) {
         }
     }
 
+    /**
+     * Updates the available credit limit of a credit card.
+     *
+     * @param id The ID of the credit card to update.
+     * @param newLimit The new available credit limit to set.
+     */
     fun updateAvailableLimit(id: Int, newLimit: Double) {
         transaction {
             CreditCardTable.update({ CreditCardTable.id eq id }) {
@@ -69,6 +100,12 @@ class CreditCardRepository(private val dataSource: DataSource) {
         }
     }
 
+    /**
+     * Updates the status of a credit card.
+     *
+     * @param id The ID of the credit card to update.
+     * @param status The new status to set.
+     */
     fun updateCreditStatus(id: Int, status: StatusEnum) {
         transaction {
             CreditCardTable.update({ CreditCardTable.id eq id }) {
@@ -77,6 +114,12 @@ class CreditCardRepository(private val dataSource: DataSource) {
         }
     }
 
+    /**
+     * Updates the expiration date of a credit card.
+     *
+     * @param id The ID of the credit card to update.
+     * @param dataValidade The new expiration date to set.
+     */
     fun updateCreditExpirationDate(id: Int, dataValidade: LocalDate) {
         transaction {
             CreditCardTable.update({ CreditCardTable.id eq id }) {
@@ -86,10 +129,15 @@ class CreditCardRepository(private val dataSource: DataSource) {
     }
 
 
+    /**
+     * Deletes a credit card by its ID.
+     *
+     * @param id The ID of the credit card to delete.
+     * @return True if the credit card was deleted, false otherwise.
+     */
     fun deleteCreditCardById(id: Int): Boolean {
         return transaction {
-
-            val deletedCardCount = CreditCardTable.deleteWhere { CreditCardTable.id eq id}
+            val deletedCardCount = CreditCardTable.deleteWhere { CreditCardTable.id eq id }
             if (deletedCardCount > 0) {
                 println("Credit card with number $id deleted.")
             } else {
@@ -99,6 +147,9 @@ class CreditCardRepository(private val dataSource: DataSource) {
         }
     }
 
+    /**
+     * Deletes all credit cards from the database.
+     */
     fun deleteAllCreditCards() {
         transaction {
             // Deletes all entries from the CreditCards table
@@ -129,3 +180,4 @@ class CreditCardRepository(private val dataSource: DataSource) {
         )
     }
 }
+

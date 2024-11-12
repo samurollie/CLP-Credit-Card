@@ -49,12 +49,14 @@ class CreditCardService(
 
         // Create a new credit card instance
         val newCard = CreditCard(
-            numeroCartao = createCreditCardNumber() ?: throw IllegalStateException("Failed to generate credit card number."),
-            cvv = createCVV() ?: throw IllegalStateException("Failed to generate CVV."),
-            dataValidade = createExpirationDate() ?: throw IllegalStateException("Failed to generate expiration date."),
-            limiteDisponivel = defineAvailableLimit().takeIf { it >= 0 } ?: throw IllegalArgumentException("Available limit must be non-negative."),
+            numeroCartao = createCreditCardNumber(),
+            cvv = createCVV(),
+            dataValidade = createExpirationDate(),
+            limiteDisponivel = defineAvailableLimit().takeIf { it >= 0 }
+                ?: throw IllegalArgumentException("Available limit must be non-negative."),
             status = StatusEnum.Ativo,
-            limiteTotal = defineTotalLimit().takeIf { it >= 0 } ?: throw IllegalArgumentException("Total limit must be non-negative."),
+            limiteTotal = defineTotalLimit().takeIf { it >= 0 }
+                ?: throw IllegalArgumentException("Total limit must be non-negative."),
             idUsuario = newUserId,
             closingDay = closingDay
         )
@@ -116,7 +118,7 @@ class CreditCardService(
         return creditCardRepository.updateCreditExpirationDate(id, expirationDate)
     }
 
-    fun getAllCreditCards() : List<CreditCard> {
+    fun getAllCreditCards(): List<CreditCard> {
         return creditCardRepository.getAllCreditCards()
     }
 

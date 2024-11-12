@@ -29,7 +29,11 @@ class PurchaseService(
 
         for (i in 0 until purchase.installments) {
             val installmentDate = purchaseDate.plusMonths(i.toLong())
-            val newPurchase = purchaseRepository.createPurchase(installmentValue, installmentDate, "${purchase.description} - Parcela ${i + 1}/${purchase.installments}")
+            val newPurchase = purchaseRepository.createPurchase(
+                installmentValue,
+                installmentDate,
+                "${purchase.description} - Parcela ${i + 1}/${purchase.installments}"
+            )
             this.addToInvoice(newPurchase, purchase.creditCard, installmentDate)
             purchases.add(newPurchase)
         }

@@ -1,4 +1,5 @@
 package com.clp.credit_card.tables
+
 import com.clp.credit_card.models.StatusEnum
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
@@ -11,6 +12,7 @@ class PGEnum<T : Enum<T>>(enumTypeName: String, enumValue: T?) : PGobject() {
         type = enumTypeName
     }
 }
+
 object CreditCardTable : IntIdTable("cartao_de_credito") {
     val numeroCartao: Column<String> = varchar("numero_cartao", 255).uniqueIndex()
     val cvv: Column<String> = varchar("cvv", 3)  // Adjust length if needed
