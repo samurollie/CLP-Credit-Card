@@ -20,4 +20,4 @@
 3. Crie uma cópia do arquivo `.env.example`
 4. Renomeie essa cópia para `.env` e preencha com os dados do banco de dados
 5. Execute o arquivo sql `create status enum.sql`
-6. Execute o projeto.
+6. Execute o projeto. A api estará rodando no endereço [http://localhost:8080](http://localhost:8080)
