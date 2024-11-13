@@ -4,6 +4,7 @@ plugins {
 	id("org.springframework.boot") version "3.3.4"
 	id("io.spring.dependency-management") version "1.1.6"
 	id("application") // Add this line
+	id("com.bmuschko.docker-spring-boot-application") version "9.3.1"
 }
 
 group = "com.clp"
@@ -56,4 +57,12 @@ tasks.withType<Test> {
 
 application {
 	mainClass.set("com.clp.models.MainKt") // Specify your main class here
+}
+
+docker {
+	springBootApplication {
+		baseImage.set("openjdk:17-jdk-slim")
+		ports.set(listOf(8080))
+		images.set(setOf("${project.group}/${project.name}:${project.version}"))
+	}
 }
