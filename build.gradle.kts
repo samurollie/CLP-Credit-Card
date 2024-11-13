@@ -56,7 +56,15 @@ tasks.withType<Test> {
 }
 
 application {
-	mainClass.set("com.clp.models.MainKt") // Specify your main class here
+	mainClass.set("com.clp.credit_card.CreditCardApplicationKt")
+}
+
+springBoot {
+	mainClass.set("com.clp.credit_card.CreditCardApplicationKt")
+}
+
+tasks.bootJar {
+	archiveFileName.set("credit_card.jar") // Nome do arquivo JAR
 }
 
 docker {

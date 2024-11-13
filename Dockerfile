@@ -5,7 +5,10 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copia o arquivo JAR gerado para o diretório de trabalho
-COPY build/libs/*.jar app.jar
+COPY build/libs/credit_card.jar app.jar
+
+# Expor a porta padrão do Spring Boot (8080)
+EXPOSE 8080
 
 # Define o comando para executar a aplicação
 ENTRYPOINT ["java", "-jar", "app.jar"]

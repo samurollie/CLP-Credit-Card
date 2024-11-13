@@ -19,5 +19,5 @@
 2. No Postgres, crie a base de dados que será usada pela aplicação
 3. Crie uma cópia do arquivo `.env.example`
 4. Renomeie essa cópia para `.env` e preencha com os dados do banco de dados
-5. Execute o arquivo sql `create status enum.sql`
+5. Execute o arquivo sql `init.sql`
 6. Execute o projeto. A api estará rodando no endereço [http://localhost:8080](http://localhost:8080)
